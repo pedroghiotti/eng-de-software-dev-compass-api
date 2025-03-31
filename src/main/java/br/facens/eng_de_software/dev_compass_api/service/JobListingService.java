@@ -11,8 +11,10 @@ import br.facens.eng_de_software.dev_compass_api.repository.TechnologyRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class JobListingService {
@@ -67,9 +69,9 @@ public class JobListingService {
             .orElseThrow(Exception::new);
 
         jobListing.setTechnologies(
-            editorDto.technologyIds().stream().map(technologyId ->
+            editorDto.technologyIds().stream().distinct().map(technologyId ->
                 technologyRepository.findById(technologyId).orElseThrow(RuntimeException::new)
-            ).toList()
+            ).collect(Collectors.toCollection(ArrayList::new))
         );
 
         jobListing.setRegion(

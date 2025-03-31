@@ -1,15 +1,14 @@
 package br.facens.eng_de_software.dev_compass_api.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobListing {
@@ -20,7 +19,7 @@ public class JobListing {
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "job_listing_technology",
         joinColumns = @JoinColumn(name = "job_listing_id"),

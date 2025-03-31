@@ -9,19 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TechnologyService {
     @Autowired
     TechnologyRepository technologyRepository;
 
-    public TechnologyResponseDto create(TechnologyEditorDto editorDto) {
-        Technology newTechnology = new Technology(editorDto.name());
+    public TechnologyResponseDto create(UUID id, TechnologyEditorDto editorDto) {
+        Technology newTechnology = new Technology(id, editorDto.name());
         technologyRepository.save(newTechnology);
         return TechnologyResponseDto.fromTechnology(newTechnology);
     }
 
-    public TechnologyResponseDto getById(String id) {
+    public TechnologyResponseDto create(TechnologyEditorDto editorDto) {
+        UUID newTechnologyId = UUID.randomUUID();
+        return this.create(newTechnologyId, editorDto);
+    }
+
+    public TechnologyResponseDto getById(UUID id) {
         return TechnologyResponseDto.fromTechnology(
                 technologyRepository.findById(id)
                         .orElseThrow(RuntimeException::new)
@@ -33,7 +39,7 @@ public class TechnologyService {
                 .map(TechnologyResponseDto::fromTechnology).toList();
     }
 
-    public TechnologyResponseDto update(String id, TechnologyEditorDto editorDto) throws Exception {
+    public TechnologyResponseDto update(UUID id, TechnologyEditorDto editorDto) throws Exception {
         Technology technology = technologyRepository.findById(id)
                 .orElseThrow(Exception::new);
 
@@ -44,11 +50,11 @@ public class TechnologyService {
         return TechnologyResponseDto.fromTechnology(technology);
     }
 
-    public void delete(String id) {
+    public void delete(UUID id) {
         technologyRepository.deleteById(id);
     }
 
-    public boolean existsById(String id) {
+    public boolean existsById(UUID id) {
         return technologyRepository.existsById(id);
     }
 }

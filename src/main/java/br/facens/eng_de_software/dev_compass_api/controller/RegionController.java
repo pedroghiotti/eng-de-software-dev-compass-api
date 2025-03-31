@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/regions")
@@ -23,7 +24,7 @@ public class RegionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegionResponseDto> getById(@PathVariable String id) {
+    public ResponseEntity<RegionResponseDto> getById(@PathVariable UUID id) {
         RegionResponseDto responseDto = regionService.getById(id);
         return ResponseEntity.ok(responseDto);
     }
@@ -35,20 +36,20 @@ public class RegionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RegionResponseDto> update(@PathVariable String id, @RequestBody RegionEditorDto editorDto) throws Exception {
+    public ResponseEntity<RegionResponseDto> update(@PathVariable UUID id, @RequestBody RegionEditorDto editorDto) throws Exception {
         boolean regionExists = regionService.existsById(id);
 
         if (regionExists) {
             RegionResponseDto responseDto = regionService.update(id, editorDto);
             return ResponseEntity.ok(responseDto);
         } else {
-            RegionResponseDto responseDto = regionService.create(editorDto);
+            RegionResponseDto responseDto = regionService.create(id, editorDto);
             return ResponseEntity.created(URI.create("/regions/" + id)).body(responseDto);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         regionService.delete(id);
         return ResponseEntity.ok().build();
     }
