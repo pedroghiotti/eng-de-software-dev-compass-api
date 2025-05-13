@@ -6,6 +6,7 @@ import br.facens.eng_de_software.dev_compass_api.model.Technology;
 import br.facens.eng_de_software.dev_compass_api.repository.TechnologyRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,14 @@ public class TechnologyService {
     @Autowired
     TechnologyRepository technologyRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public TechnologyResponseDto create(UUID id, TechnologyEditorDto editorDto) {
         Technology newTechnology = new Technology(id, editorDto.name());
         technologyRepository.save(newTechnology);
         return TechnologyResponseDto.fromTechnology(newTechnology);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public TechnologyResponseDto create(TechnologyEditorDto editorDto) {
         UUID newTechnologyId = UUID.randomUUID();
         return this.create(newTechnologyId, editorDto);
@@ -39,6 +42,7 @@ public class TechnologyService {
                 .map(TechnologyResponseDto::fromTechnology).toList();
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public TechnologyResponseDto update(UUID id, TechnologyEditorDto editorDto) throws Exception {
         Technology technology = technologyRepository.findById(id)
                 .orElseThrow(Exception::new);
@@ -50,6 +54,7 @@ public class TechnologyService {
         return TechnologyResponseDto.fromTechnology(technology);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void delete(UUID id) {
         technologyRepository.deleteById(id);
     }

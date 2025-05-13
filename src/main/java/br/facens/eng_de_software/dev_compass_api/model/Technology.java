@@ -1,7 +1,6 @@
 package br.facens.eng_de_software.dev_compass_api.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.*;

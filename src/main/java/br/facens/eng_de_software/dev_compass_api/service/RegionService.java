@@ -6,6 +6,7 @@ import br.facens.eng_de_software.dev_compass_api.model.Region;
 import br.facens.eng_de_software.dev_compass_api.repository.RegionRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,14 @@ public class RegionService {
     @Autowired
     RegionRepository regionRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public RegionResponseDto create(UUID id, RegionEditorDto editorDto) {
         Region newRegion = new Region(id, editorDto.name());
         regionRepository.save(newRegion);
         return RegionResponseDto.fromRegion(newRegion);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public RegionResponseDto create(RegionEditorDto editorDto) {
         UUID newRegionId = UUID.randomUUID();
         return this.create(newRegionId, editorDto);
@@ -39,6 +42,7 @@ public class RegionService {
             .map(RegionResponseDto::fromRegion).toList();
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public RegionResponseDto update(UUID id, RegionEditorDto editorDto) throws Exception {
         Region region = regionRepository.findById(id)
             .orElseThrow(Exception::new);
@@ -50,6 +54,7 @@ public class RegionService {
         return RegionResponseDto.fromRegion(region);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void delete(UUID id) {
         regionRepository.deleteById(id);
     }

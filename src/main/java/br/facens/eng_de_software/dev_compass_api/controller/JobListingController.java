@@ -1,11 +1,12 @@
 package br.facens.eng_de_software.dev_compass_api.controller;
 
+import br.facens.eng_de_software.dev_compass_api.dto.JobListingCreateDto;
 import br.facens.eng_de_software.dev_compass_api.dto.JobListingEditorDto;
 import br.facens.eng_de_software.dev_compass_api.dto.JobListingResponseDto;
-import br.facens.eng_de_software.dev_compass_api.model.JobListing;
-import br.facens.eng_de_software.dev_compass_api.repository.JobListingRepository;
+import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
 import br.facens.eng_de_software.dev_compass_api.service.JobListingService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +15,20 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("job-listings")
+@RequestMapping("/job-listings")
 public class JobListingController {
-    @Autowired
-    JobListingService jobListingService;
+    private final JobListingService jobListingService;
+
+    public JobListingController(JobListingService jobListingService) {
+        this.jobListingService = jobListingService;
+    }
 
     @PostMapping
-    public ResponseEntity<JobListingResponseDto> create(@RequestBody JobListingEditorDto editorDto) throws Exception {
+    public ResponseEntity<JobListingResponseDto> create(@RequestBody JobListingCreateDto createDto) throws Exception {
+        JobListingEditorDto editorDto = new JobListingEditorDto(null, null, JobListingState.UNPUBLISHED, null, null);
+        BeanUtils.copyProperties(createDto, editorDto);
         JobListingResponseDto responseDto = jobListingService.create(editorDto);
-        return ResponseEntity.created(URI.create("/job-listings" + responseDto.id())).body(responseDto);
+        return ResponseEntity.created(URI.create("/job-listings/" + responseDto.id())).body(responseDto);
     }
 
     @GetMapping("/{id}")
@@ -32,8 +38,8 @@ public class JobListingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobListingResponseDto>> getAll() {
-        List<JobListingResponseDto> responseDtos = jobListingService.getAll();
+    public ResponseEntity<List<JobListingResponseDto>> getAll(@RequestParam(required = false) String region) {
+        List<JobListingResponseDto> responseDtos = jobListingService.getAll(region);
         return ResponseEntity.ok(responseDtos);
     }
 
@@ -51,7 +57,7 @@ public class JobListingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) throws Exception {
         jobListingService.deleteById(id);
         return ResponseEntity.ok().build();
     }

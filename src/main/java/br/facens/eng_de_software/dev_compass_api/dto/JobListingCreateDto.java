@@ -3,19 +3,15 @@ package br.facens.eng_de_software.dev_compass_api.dto;
 import java.util.List;
 import java.util.UUID;
 
-import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
-
-public record JobListingEditorDto(String title, String description, JobListingState state, UUID regionId, List<UUID> technologyIds) {
-    public JobListingEditorDto(
+public record JobListingCreateDto(String title, String description, UUID regionId, List<UUID> technologyIds) {
+    public JobListingCreateDto(
         String title,
         String description,
-        JobListingState state,
         UUID regionId,
         List<UUID> technologyIds
     ) {
         this.title = title;
         this.description = description;
-        this.state = state;
         this.regionId = regionId;
         this.technologyIds = technologyIds;
 
@@ -26,7 +22,6 @@ public record JobListingEditorDto(String title, String description, JobListingSt
         if (
             this.title.isBlank() ||
             this.description.isBlank() ||
-            this.state == null ||
             this.regionId() == null ||
             this.technologyIds.isEmpty()
         ) {

@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface RegionRepository extends JpaRepository<Region, UUID> {
     public Optional<Region> findByName(String name);
+    public boolean existsByName(String name);
 }
