@@ -5,14 +5,14 @@ import java.util.UUID;
 
 import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
 
-public record JobListingEditorDto(String title, String description, JobListingState state, UUID regionId, List<UUID> technologyIds) {
+public record JobListingEditorDto(String title, String description, JobListingState state, UUID regionId,
+        List<UUID> technologyIds) {
     public JobListingEditorDto(
-        String title,
-        String description,
-        JobListingState state,
-        UUID regionId,
-        List<UUID> technologyIds
-    ) {
+            String title,
+            String description,
+            JobListingState state,
+            UUID regionId,
+            List<UUID> technologyIds) {
         this.title = title;
         this.description = description;
         this.state = state;
@@ -23,13 +23,11 @@ public record JobListingEditorDto(String title, String description, JobListingSt
     }
 
     private void validate() {
-        if (
-            this.title.isBlank() ||
-            this.description.isBlank() ||
-            this.state == null ||
-            this.regionId() == null ||
-            this.technologyIds.isEmpty()
-        ) {
+        if (this.title == null || this.title.isBlank() ||
+                this.description == null || this.description.isBlank() ||
+                this.state == null ||
+                this.regionId == null ||
+                this.technologyIds == null || this.technologyIds.isEmpty()) {
             throw new IllegalArgumentException();
         }
     }

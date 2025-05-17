@@ -16,9 +16,10 @@ import br.facens.eng_de_software.dev_compass_api.security.service.Authentication
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class JobListingService {
@@ -30,12 +31,11 @@ public class JobListingService {
     private final TechnologyRepository technologyRepository;
 
     public JobListingService(
-        JobListingRepository jobListingRepository,
-        RegionRepository regionRepository,
-        TechnologyRepository technologyRepository,
-        AuthenticationService authenticationService,
-        BaseUserRepository baseUserRepository
-    ) {
+            JobListingRepository jobListingRepository,
+            RegionRepository regionRepository,
+            TechnologyRepository technologyRepository,
+            AuthenticationService authenticationService,
+            BaseUserRepository baseUserRepository) {
         this.jobListingRepository = jobListingRepository;
         this.regionRepository = regionRepository;
         this.technologyRepository = technologyRepository;
@@ -43,29 +43,29 @@ public class JobListingService {
         this.baseUserRepository = baseUserRepository;
     }
 
-    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('BUSINESS')")
     public JobListingResponseDto create(UUID id, JobListingEditorDto editorDto) throws Exception {
-        if (!regionRepository.existsById(editorDto.regionId())) throw new RuntimeException();
+        if (!regionRepository.existsById(editorDto.regionId()))
+            throw new RuntimeException();
         Region region = regionRepository.getReferenceById(editorDto.regionId());
-        
+
         List<Technology> technologies = editorDto.technologyIds().stream().map(
-            technologyName -> {
-                if(!technologyRepository.existsById(technologyName)) throw new RuntimeException();
-                return technologyRepository.getReferenceById(technologyName);
-            }
-        ).toList();
-    
+                technologyName -> {
+                    if (!technologyRepository.existsById(technologyName))
+                        throw new RuntimeException();
+                    return technologyRepository.getReferenceById(technologyName);
+                }).toList();
+
         Business owner = (Business) authenticationService.getCurrentUser().orElseThrow(Exception::new);
-        
+
         JobListing newJobListing = new JobListing(
-            id,
-            editorDto.title(),
-            editorDto.description(),
-            editorDto.state(),
-            region,
-            owner,
-            technologies
-        );
+                id,
+                editorDto.title(),
+                editorDto.description(),
+                editorDto.state(),
+                region,
+                owner,
+                technologies);
         jobListingRepository.save(newJobListing);
 
         owner.addManagedJobListing(newJobListing);
@@ -74,7 +74,7 @@ public class JobListingService {
         return JobListingResponseDto.fromJobListing(newJobListing);
     }
 
-    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('BUSINESS')")
     public JobListingResponseDto create(JobListingEditorDto createDto) throws Exception {
         UUID newJobListingId = UUID.randomUUID();
         return create(newJobListingId, createDto);
@@ -82,20 +82,19 @@ public class JobListingService {
 
     public JobListingResponseDto getById(UUID id) throws Exception {
         return JobListingResponseDto.fromJobListing(
-            jobListingRepository.findById(id)
-                .orElseThrow(Exception::new)
-        );
+                jobListingRepository.findById(id)
+                        .orElseThrow(Exception::new));
     }
 
     public List<JobListingResponseDto> getAll(String regionName) {
         List<JobListing> jobListings;
-        
+
         if (!(regionName == null) && !(regionName.isBlank())) {
             jobListings = jobListingRepository.findAllByRegionName(regionName);
         } else {
             jobListings = jobListingRepository.findAll();
         }
-        
+
         return jobListings.stream().map(JobListingResponseDto::fromJobListing).toList();
     }
 
@@ -104,20 +103,19 @@ public class JobListingService {
         BaseUser currentUser = authenticationService.getCurrentUser().orElseThrow(Exception::new);
         JobListing jobListing = jobListingRepository.findById(id).orElseThrow(Exception::new);
 
-        if (
-            !currentUser.getId().equals(jobListing.getBusiness().getId()) &&
-            !currentUser.getRole().equals(Role.ADMIN)
-        ) throw new Exception();
+        if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getBusiness().getId()))
+            throw new Exception();
 
-        jobListing.setTechnologies(
-            editorDto.technologyIds().stream().distinct().map(technologyId ->
-                technologyRepository.findById(technologyId).orElseThrow(RuntimeException::new)
-            ).toList()
-        );
+        List<Technology> technologies = editorDto.technologyIds().stream().distinct().map(
+                technologyId -> technologyRepository.findById(technologyId).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toCollection(ArrayList::new));
+        Region region = regionRepository.findById(editorDto.regionId()).orElseThrow(Exception::new);
 
-        jobListing.setRegion(
-            regionRepository.findById(editorDto.regionId()).orElseThrow(Exception::new)
-        );
+        jobListing.setTitle(editorDto.title());
+        jobListing.setDescription(editorDto.description());
+        jobListing.setState(editorDto.state());
+        jobListing.setTechnologies(technologies);
+        jobListing.setRegion(region);
 
         jobListingRepository.save(jobListing);
 
@@ -127,16 +125,10 @@ public class JobListingService {
     @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
     public void deleteById(UUID id) throws Exception {
         BaseUser currentUser = authenticationService.getCurrentUser().orElseThrow(Exception::new);
-        Optional<JobListing> jobListing = jobListingRepository.findById(id);
+        JobListing jobListing = jobListingRepository.findById(id).orElseThrow(Exception::new);
 
-        if (jobListing.isEmpty()) return;
-
-        if (
-            !currentUser.getId().equals(jobListing.get().getBusiness().getId()) &&
-            !currentUser.getRole().equals(Role.ADMIN)
-        ) {
+        if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getBusiness().getId()))
             throw new Exception();
-        }
 
         jobListingRepository.deleteById(id);
     }

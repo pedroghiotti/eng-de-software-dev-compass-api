@@ -6,7 +6,6 @@ import br.facens.eng_de_software.dev_compass_api.dto.JobListingResponseDto;
 import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
 import br.facens.eng_de_software.dev_compass_api.service.JobListingService;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,12 @@ public class JobListingController {
 
     @PostMapping
     public ResponseEntity<JobListingResponseDto> create(@RequestBody JobListingCreateDto createDto) throws Exception {
-        JobListingEditorDto editorDto = new JobListingEditorDto(null, null, JobListingState.UNPUBLISHED, null, null);
-        BeanUtils.copyProperties(createDto, editorDto);
+        JobListingEditorDto editorDto = new JobListingEditorDto(
+                createDto.title(),
+                createDto.description(),
+                JobListingState.UNPUBLISHED,
+                createDto.regionId(),
+                createDto.technologyIds());
         JobListingResponseDto responseDto = jobListingService.create(editorDto);
         return ResponseEntity.created(URI.create("/job-listings/" + responseDto.id())).body(responseDto);
     }
@@ -44,10 +47,11 @@ public class JobListingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobListingResponseDto> update(@PathVariable UUID id, @RequestBody JobListingEditorDto editorDto) throws Exception {
+    public ResponseEntity<JobListingResponseDto> update(@PathVariable UUID id,
+            @RequestBody JobListingEditorDto editorDto) throws Exception {
         boolean jobListingExists = jobListingService.existsById(id);
 
-        if(jobListingExists) {
+        if (jobListingExists) {
             JobListingResponseDto responseDto = jobListingService.update(id, editorDto);
             return ResponseEntity.ok(responseDto);
         } else {
