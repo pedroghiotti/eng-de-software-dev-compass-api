@@ -13,7 +13,10 @@ import br.facens.eng_de_software.dev_compass_api.security.model.BaseUser;
 import br.facens.eng_de_software.dev_compass_api.security.model.Role;
 import br.facens.eng_de_software.dev_compass_api.security.repository.BaseUserRepository;
 import br.facens.eng_de_software.dev_compass_api.security.service.AuthenticationService;
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,9 +24,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.naming.AuthenticationException;
+
 @Service
 public class JobListingService {
-
     private final BaseUserRepository baseUserRepository;
     private final AuthenticationService authenticationService;
     private final JobListingRepository jobListingRepository;
@@ -48,29 +52,23 @@ public class JobListingService {
         if (!regionRepository.existsById(editorDto.regionId()))
             throw new RuntimeException();
         Region region = regionRepository.getReferenceById(editorDto.regionId());
-
         List<Technology> technologies = editorDto.technologyIds().stream().map(
                 technologyName -> {
                     if (!technologyRepository.existsById(technologyName))
                         throw new RuntimeException();
                     return technologyRepository.getReferenceById(technologyName);
                 }).toList();
-
         Business owner = (Business) authenticationService.getCurrentUser().orElseThrow(Exception::new);
-
         JobListing newJobListing = new JobListing(
                 id,
                 editorDto.title(),
                 editorDto.description(),
-                editorDto.state(),
                 region,
                 owner,
                 technologies);
         jobListingRepository.save(newJobListing);
-
         owner.addManagedJobListing(newJobListing);
         baseUserRepository.save(owner);
-
         return JobListingResponseDto.fromJobListing(newJobListing);
     }
 
@@ -81,59 +79,94 @@ public class JobListingService {
     }
 
     public JobListingResponseDto getById(UUID id) throws Exception {
-        return JobListingResponseDto.fromJobListing(
-                jobListingRepository.findById(id)
-                        .orElseThrow(Exception::new));
+        return JobListingResponseDto.fromJobListing(_getById(id));
     }
 
     public List<JobListingResponseDto> getAll(String regionName) {
         List<JobListing> jobListings;
-
-        if (!(regionName == null) && !(regionName.isBlank())) {
+        if (!(regionName == null) && !(regionName.isBlank()))
             jobListings = jobListingRepository.findAllByRegionName(regionName);
-        } else {
+        else
             jobListings = jobListingRepository.findAll();
-        }
-
         return jobListings.stream().map(JobListingResponseDto::fromJobListing).toList();
     }
 
     @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
     public JobListingResponseDto update(UUID id, JobListingEditorDto editorDto) throws Exception {
-        BaseUser currentUser = authenticationService.getCurrentUser().orElseThrow(Exception::new);
-        JobListing jobListing = jobListingRepository.findById(id).orElseThrow(Exception::new);
-
-        if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getBusiness().getId()))
-            throw new Exception();
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
 
         List<Technology> technologies = editorDto.technologyIds().stream().distinct().map(
-                technologyId -> technologyRepository.findById(technologyId).orElseThrow(RuntimeException::new))
+                technologyId -> technologyRepository.findById(technologyId)
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                String.format("Technology not found with id %s", id))))
                 .collect(Collectors.toCollection(ArrayList::new));
-        Region region = regionRepository.findById(editorDto.regionId()).orElseThrow(Exception::new);
+
+        Region region = regionRepository.findById(editorDto.regionId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Region not found with id %s", id)));
 
         jobListing.setTitle(editorDto.title());
         jobListing.setDescription(editorDto.description());
-        jobListing.setState(editorDto.state());
         jobListing.setTechnologies(technologies);
         jobListing.setRegion(region);
 
         jobListingRepository.save(jobListing);
-
         return JobListingResponseDto.fromJobListing(jobListing);
     }
 
     @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
     public void deleteById(UUID id) throws Exception {
-        BaseUser currentUser = authenticationService.getCurrentUser().orElseThrow(Exception::new);
-        JobListing jobListing = jobListingRepository.findById(id).orElseThrow(Exception::new);
-
-        if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getBusiness().getId()))
-            throw new Exception();
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
 
         jobListingRepository.deleteById(id);
     }
 
     public boolean existsById(UUID id) {
         return jobListingRepository.existsById(id);
+    }
+
+    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    public void unpublish(UUID id) throws Exception {
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
+        jobListing.unpublish();
+        jobListingRepository.save(jobListing);
+    }
+
+    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    public void publish(UUID id) throws Exception {
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
+        jobListing.publish();
+        jobListingRepository.save(jobListing);
+    }
+
+    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    public void startSelection(UUID id) throws Exception {
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
+        jobListing.startSelection();
+        jobListingRepository.save(jobListing);
+    }
+
+    @PreAuthorize("hasAuthority('BUSINESS') || hasAuthority('ADMIN')")
+    public void close(UUID id) throws Exception {
+        JobListing jobListing = _getById(id);
+        verifyOwnership(jobListing);
+        jobListing.close();
+        jobListingRepository.save(jobListing);
+    }
+
+    private JobListing _getById(UUID id) {
+        return jobListingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Job listing not found with id %s", id)));
+    }
+
+    private void verifyOwnership(JobListing jobListing) throws Exception {
+        BaseUser currentUser = authenticationService.getCurrentUser()
+                .orElseThrow(() -> new AuthenticationException("User not authenticated. Operation disallowed."));
+        if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getOwner().getId()))
+            throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");
     }
 }

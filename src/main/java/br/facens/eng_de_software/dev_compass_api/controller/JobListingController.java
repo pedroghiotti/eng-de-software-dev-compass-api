@@ -1,9 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.controller;
 
-import br.facens.eng_de_software.dev_compass_api.dto.JobListingCreateDto;
 import br.facens.eng_de_software.dev_compass_api.dto.JobListingEditorDto;
 import br.facens.eng_de_software.dev_compass_api.dto.JobListingResponseDto;
-import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
 import br.facens.eng_de_software.dev_compass_api.service.JobListingService;
 
 import org.springframework.http.ResponseEntity;
@@ -23,13 +21,7 @@ public class JobListingController {
     }
 
     @PostMapping
-    public ResponseEntity<JobListingResponseDto> create(@RequestBody JobListingCreateDto createDto) throws Exception {
-        JobListingEditorDto editorDto = new JobListingEditorDto(
-                createDto.title(),
-                createDto.description(),
-                JobListingState.UNPUBLISHED,
-                createDto.regionId(),
-                createDto.technologyIds());
+    public ResponseEntity<JobListingResponseDto> create(@RequestBody JobListingEditorDto editorDto) throws Exception {
         JobListingResponseDto responseDto = jobListingService.create(editorDto);
         return ResponseEntity.created(URI.create("/job-listings/" + responseDto.id())).body(responseDto);
     }
@@ -63,6 +55,30 @@ public class JobListingController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) throws Exception {
         jobListingService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/unpublish")
+    public ResponseEntity<Void> unpublish(@PathVariable UUID id) throws Exception {
+        jobListingService.unpublish(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/publish")
+    public ResponseEntity<Void> publish(@PathVariable UUID id) throws Exception {
+        jobListingService.publish(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/start-selection")
+    public ResponseEntity<Void> startSelection(@PathVariable UUID id) throws Exception {
+        jobListingService.startSelection(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/close")
+    public ResponseEntity<Void> close(@PathVariable UUID id) throws Exception {
+        jobListingService.close(id);
         return ResponseEntity.ok().build();
     }
 }

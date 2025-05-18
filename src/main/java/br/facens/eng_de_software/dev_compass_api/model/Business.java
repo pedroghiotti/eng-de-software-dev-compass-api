@@ -10,7 +10,7 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 public class Business extends BaseUser {
-    @OneToMany(mappedBy = "business")
+    @OneToMany(mappedBy = "owner")
     private final Set<JobListing> managedJobListings;
 
     public Business(String username, String password) {

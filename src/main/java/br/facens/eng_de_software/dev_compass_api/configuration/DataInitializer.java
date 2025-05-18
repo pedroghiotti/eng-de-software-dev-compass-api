@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import br.facens.eng_de_software.dev_compass_api.model.Business;
 import br.facens.eng_de_software.dev_compass_api.model.JobListing;
-import br.facens.eng_de_software.dev_compass_api.model.JobListingState;
 import br.facens.eng_de_software.dev_compass_api.model.Technology;
 import br.facens.eng_de_software.dev_compass_api.repository.JobListingRepository;
 import br.facens.eng_de_software.dev_compass_api.repository.RegionRepository;
@@ -53,14 +52,12 @@ public class DataInitializer {
                 }
 
                 JobListing newJobListing = new JobListing(
-                    UUID.randomUUID(),
-                    String.join(" | ", newJobListingTechnologies.stream().map(Technology::getName).toList()),
-                    String.join(" | ", newJobListingTechnologies.stream().map(Technology::getName).toList()),
-                    JobListingState.PUBLISHED,
-                    region,
-                    business,
-                    newJobListingTechnologies.stream().toList()
-                );
+                        UUID.randomUUID(),
+                        String.join(" | ", newJobListingTechnologies.stream().map(Technology::getName).toList()),
+                        String.join(" | ", newJobListingTechnologies.stream().map(Technology::getName).toList()),
+                        region,
+                        business,
+                        newJobListingTechnologies.stream().toList());
 
                 newJobListings.add(newJobListing);
             }

@@ -1,9 +1,11 @@
 package br.facens.eng_de_software.dev_compass_api.security.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class AuthenticationData {
+    @Column(unique = true)
     private String username;
     private String password;
 
@@ -39,6 +41,6 @@ public class AuthenticationData {
          * Método não implementado.
          * Aqui, seriam realizadas validações de validez de senha e nome de usuário
          * conforme regras de negócio a respeito.
-        */
+         */
     }
 }

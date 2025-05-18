@@ -7,20 +7,18 @@ import org.springframework.web.bind.annotation.RestController;
 import br.facens.eng_de_software.dev_compass_api.security.service.AuthenticationService;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
 @RestController
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     public AuthenticationController(
-        @Autowired AuthenticationService authenticationService
-    ) {
+            @Autowired AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/auth")
+    @PostMapping("/authenticate")
     public String authenticate(Authentication authentication) {
         return authenticationService.authenticate(authentication);
     }
-    
+
 }
