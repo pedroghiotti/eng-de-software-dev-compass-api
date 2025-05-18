@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.naming.AuthenticationException;
-
 @Service
 public class JobListingService {
     private final BaseUserRepository baseUserRepository;
@@ -58,7 +56,7 @@ public class JobListingService {
                         throw new RuntimeException();
                     return technologyRepository.getReferenceById(technologyName);
                 }).toList();
-        Business owner = (Business) authenticationService.getCurrentUser().orElseThrow(Exception::new);
+        Business owner = (Business) authenticationService.getCurrentUser();
         JobListing newJobListing = new JobListing(
                 id,
                 editorDto.title(),
@@ -164,8 +162,7 @@ public class JobListingService {
     }
 
     private void verifyOwnership(JobListing jobListing) throws Exception {
-        BaseUser currentUser = authenticationService.getCurrentUser()
-                .orElseThrow(() -> new AuthenticationException("User not authenticated. Operation disallowed."));
+        BaseUser currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(jobListing.getOwner().getId()))
             throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");
     }

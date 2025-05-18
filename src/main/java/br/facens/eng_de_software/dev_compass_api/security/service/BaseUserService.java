@@ -3,9 +3,6 @@ package br.facens.eng_de_software.dev_compass_api.security.service;
 import java.util.List;
 import java.util.UUID;
 
-import javax.naming.AuthenticationException;
-
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,9 +41,7 @@ public class BaseUserService {
             case BUSINESS -> newUser = new Business(createDto.username(), encodedPassword);
             case CANDIDATE -> newUser = new Candidate(createDto.username(), encodedPassword);
             case ADMIN -> {
-                BaseUser currentUser = authenticationService.getCurrentUser()
-                        .orElseThrow(
-                                () -> new AuthenticationException("User not authenticated. Operation disallowed."));
+                BaseUser currentUser = authenticationService.getCurrentUser();
                 if (!currentUser.getRole().equals(Role.ADMIN))
                     throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");
                 newUser = new Admin(createDto.username(), encodedPassword);
@@ -97,8 +92,7 @@ public class BaseUserService {
     }
 
     private void verifyOwnership(BaseUser user) throws Exception {
-        BaseUser currentUser = authenticationService.getCurrentUser()
-                .orElseThrow(() -> new AuthenticationException("User not authenticated. Operation disallowed."));
+        BaseUser currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(user.getId()))
             throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");
     }

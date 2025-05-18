@@ -1,7 +1,8 @@
 package br.facens.eng_de_software.dev_compass_api.security.service;
+
 import br.facens.eng_de_software.dev_compass_api.security.repository.BaseUserRepository;
 
-import java.util.Optional;
+import javax.naming.AuthenticationException;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,9 +16,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
 
     public AuthenticationService(
-        JwtService jwtService,
-        BaseUserRepository baseUserRepository
-    ) {
+            JwtService jwtService,
+            BaseUserRepository baseUserRepository) {
         this.jwtService = jwtService;
         this.baseUserRepository = baseUserRepository;
     }
@@ -26,14 +26,10 @@ public class AuthenticationService {
         return jwtService.generateToken(authentication);
     }
 
-    public Optional<BaseUser> getCurrentUser() {
+    public BaseUser getCurrentUser() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(baseUserRepository.findByAuthenticationDataUsername(authentication.getName())
-            .orElseThrow(() -> new IllegalStateException("Authentication error")));
+        return baseUserRepository.findByAuthenticationDataUsername(authentication.getName())
+                .orElseThrow(() -> new AuthenticationException("User not authenticated."));
     }
 }
