@@ -45,7 +45,7 @@ public class JobListing {
     }
 
     public void unpublish() {
-        if (this.state.equals(JobListingState.CLOSED) || this.state.equals(JobListingState.UNPUBLISHED))
+        if (this.state.equals(JobListingState.PUBLISHED))
             throw new IllegalStateException(
                     String.format(
                             "Transição de estado inválida: %s -> %s",
@@ -66,7 +66,7 @@ public class JobListing {
         this.state = JobListingState.PUBLISHED;
     }
 
-    public void startSelection() {
+    public void beginCandidateSelection() {
         if (!this.state.equals(JobListingState.PUBLISHED))
             throw new IllegalStateException(
                     String.format(

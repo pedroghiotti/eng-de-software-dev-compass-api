@@ -144,7 +144,7 @@ public class JobListingService {
     public void startSelection(UUID id) throws Exception {
         JobListing jobListing = _getById(id);
         verifyOwnership(jobListing);
-        jobListing.startSelection();
+        jobListing.beginCandidateSelection();
         jobListingRepository.save(jobListing);
     }
 
