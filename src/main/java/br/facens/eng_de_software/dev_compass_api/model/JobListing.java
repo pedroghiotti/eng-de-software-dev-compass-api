@@ -22,15 +22,12 @@ public class JobListing {
     private JobListingState state;
 
     @ManyToOne
-    @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
     @ManyToOne
-    @JoinColumn(name = "business_id", nullable = false)
     private Business owner;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "job_listing_technology", joinColumns = @JoinColumn(name = "job_listing_id"), inverseJoinColumns = @JoinColumn(name = "technology_id"))
+    @ManyToMany
     private List<Technology> technologies;
 
     public JobListing(UUID id, String title, String description, Region region, Business owner,

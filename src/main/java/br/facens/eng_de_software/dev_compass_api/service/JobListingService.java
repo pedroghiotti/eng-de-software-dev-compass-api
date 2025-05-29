@@ -11,7 +11,6 @@ import br.facens.eng_de_software.dev_compass_api.repository.RegionRepository;
 import br.facens.eng_de_software.dev_compass_api.repository.TechnologyRepository;
 import br.facens.eng_de_software.dev_compass_api.security.model.BaseUser;
 import br.facens.eng_de_software.dev_compass_api.security.model.Role;
-import br.facens.eng_de_software.dev_compass_api.security.repository.BaseUserRepository;
 import br.facens.eng_de_software.dev_compass_api.security.service.AuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class JobListingService {
-    private final BaseUserRepository baseUserRepository;
     private final AuthenticationService authenticationService;
     private final JobListingRepository jobListingRepository;
     private final RegionRepository regionRepository;
@@ -36,13 +34,11 @@ public class JobListingService {
             JobListingRepository jobListingRepository,
             RegionRepository regionRepository,
             TechnologyRepository technologyRepository,
-            AuthenticationService authenticationService,
-            BaseUserRepository baseUserRepository) {
+            AuthenticationService authenticationService) {
         this.jobListingRepository = jobListingRepository;
         this.regionRepository = regionRepository;
         this.technologyRepository = technologyRepository;
         this.authenticationService = authenticationService;
-        this.baseUserRepository = baseUserRepository;
     }
 
     @PreAuthorize("hasAuthority('BUSINESS')")
@@ -65,8 +61,6 @@ public class JobListingService {
                 owner,
                 technologies);
         jobListingRepository.save(newJobListing);
-        owner.addManagedJobListing(newJobListing);
-        baseUserRepository.save(owner);
         return JobListingResponseDto.fromJobListing(newJobListing);
     }
 

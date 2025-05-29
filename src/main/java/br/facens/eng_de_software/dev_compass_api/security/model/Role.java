@@ -5,10 +5,6 @@ public enum Role {
     BUSINESS,
     ADMIN;
 
-    public String getRole() {
-        return "ROLE_" + this.name();
-    }
-
     public String getAuthority() {
         return this.name();
     }
