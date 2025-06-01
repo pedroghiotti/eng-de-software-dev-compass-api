@@ -7,6 +7,7 @@ import br.facens.eng_de_software.dev_compass_api.model.Technology;
 import br.facens.eng_de_software.dev_compass_api.repository.RegionRepository;
 import br.facens.eng_de_software.dev_compass_api.repository.TechnologyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class ReportService {
     public ReportResponseDto getByRegionName(String regionName) {
         Region targetRegion = regionRepository.findByName(regionName).orElseThrow(RuntimeException::new);
 
-        List<Technology> topTechnologies = technologyRepository.findTopTechnologiesByRegion(targetRegion.getId(), 3);
+        List<Technology> topTechnologies = technologyRepository.findTopTechnologiesByRegion(targetRegion.getId(), PageRequest.ofSize(3));
 
         return new ReportResponseDto(
             topTechnologies.stream().map(TechnologyResponseDto::fromTechnology).toList()

@@ -3,7 +3,7 @@ package br.facens.eng_de_software.dev_compass_api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -17,9 +17,9 @@ public class JobListing {
 
     private String description;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Setter(AccessLevel.NONE)
-    private JobListingState state;
+    private JobListingState state = JobListingState.UNPUBLISHED;
 
     @ManyToOne
     private Region region;
@@ -27,61 +27,45 @@ public class JobListing {
     @ManyToOne
     private Business owner;
 
-    @ManyToMany
-    private List<Technology> technologies;
+    @ManyToMany private Set<Technology> technologies;
 
-    public JobListing(UUID id, String title, String description, Region region, Business owner,
-            List<Technology> technologies) {
-        this.state = JobListingState.UNPUBLISHED;
+    @ManyToMany private Set<Category> categories;
+
+    @OneToOne(optional=false, cascade=CascadeType.ALL) private CompensationPackage compensationPackage;
+    
+    public JobListing(UUID id, String title, String description, Region region, Business owner, Set<Technology> technologies, Set<Category> categories, Double salaryValue, Double... benefitValues) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.region = region;
         this.owner = owner;
         this.technologies = technologies;
+        this.categories = categories;
+        this.compensationPackage = new CompensationPackage(salaryValue, benefitValues);
     }
+
 
     public void unpublish() {
         if (this.state.equals(JobListingState.PUBLISHED))
-            throw new IllegalStateException(
-                    String.format(
-                            "Transição de estado inválida: %s -> %s",
-                            this.state.toString(),
-                            JobListingState.UNPUBLISHED.toString()));
-
+            throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.UNPUBLISHED);
         this.state = JobListingState.UNPUBLISHED;
     }
 
     public void publish() {
         if (!this.state.equals(JobListingState.UNPUBLISHED))
-            throw new IllegalStateException(
-                    String.format(
-                            "Transição de estado inválida: %s -> %s",
-                            this.state.toString(),
-                            JobListingState.PUBLISHED.toString()));
-
+            throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.PUBLISHED);
         this.state = JobListingState.PUBLISHED;
     }
 
     public void beginCandidateSelection() {
         if (!this.state.equals(JobListingState.PUBLISHED))
-            throw new IllegalStateException(
-                    String.format(
-                            "Transição de estado inválida: %s -> %s",
-                            this.state.toString(),
-                            JobListingState.SELECTION_IN_PROCESS.toString()));
-
+            throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.SELECTION_IN_PROCESS);
         this.state = JobListingState.SELECTION_IN_PROCESS;
     }
 
     public void close() {
         if (!this.state.equals(JobListingState.SELECTION_IN_PROCESS))
-            throw new IllegalStateException(
-                    String.format(
-                            "Transição de estado inválida: %s -> %s",
-                            this.state.toString(),
-                            JobListingState.CLOSED.toString()));
-
+            throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.CLOSED);
         this.state = JobListingState.CLOSED;
     }
 }

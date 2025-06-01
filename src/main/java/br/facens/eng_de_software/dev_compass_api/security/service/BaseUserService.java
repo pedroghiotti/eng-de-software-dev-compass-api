@@ -15,20 +15,20 @@ import br.facens.eng_de_software.dev_compass_api.security.dto.BaseUserResponseDt
 import br.facens.eng_de_software.dev_compass_api.security.model.Admin;
 import br.facens.eng_de_software.dev_compass_api.security.model.BaseUser;
 import br.facens.eng_de_software.dev_compass_api.security.model.Role;
-import br.facens.eng_de_software.dev_compass_api.security.repository.BaseUserRepository;
+import br.facens.eng_de_software.dev_compass_api.security.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class BaseUserService {
     private final AuthenticationService authenticationService;
-    private final BaseUserRepository baseUserRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public BaseUserService(
-            BaseUserRepository baseUserRepository,
+            UserRepository baseUserRepository,
             AuthenticationService authenticationService,
             PasswordEncoder passwordEncoder) {
-        this.baseUserRepository = baseUserRepository;
+        this.userRepository = baseUserRepository;
         this.authenticationService = authenticationService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -49,7 +49,7 @@ public class BaseUserService {
             default -> throw new IllegalArgumentException("Invalid User type.");
         }
 
-        baseUserRepository.save(newUser);
+        userRepository.save(newUser);
         return BaseUserResponseDto.fromBaseUser(newUser);
     }
 
@@ -58,7 +58,7 @@ public class BaseUserService {
     }
 
     public List<BaseUserResponseDto> getAll() {
-        return baseUserRepository.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(BaseUserResponseDto::fromBaseUser).toList();
     }
 
@@ -70,7 +70,7 @@ public class BaseUserService {
         user.setUsername(editorDto.username());
         user.setPassword(passwordEncoder.encode(editorDto.password()));
 
-        baseUserRepository.save(user);
+        userRepository.save(user);
         return BaseUserResponseDto.fromBaseUser(user);
     }
 
@@ -78,15 +78,15 @@ public class BaseUserService {
         BaseUser currentUser = _getById(id);
         verifyOwnership(currentUser);
 
-        baseUserRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     public boolean existsById(UUID id) {
-        return baseUserRepository.existsById(id);
+        return userRepository.existsById(id);
     }
 
     private BaseUser _getById(UUID id) {
-        return baseUserRepository.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("User listing not found with id %s", id)));
     }

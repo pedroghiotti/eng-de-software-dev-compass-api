@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 
 import br.facens.eng_de_software.dev_compass_api.security.model.BaseUser;
 import br.facens.eng_de_software.dev_compass_api.security.model.UserDetailsImpl;
-import br.facens.eng_de_software.dev_compass_api.security.repository.BaseUserRepository;
+import br.facens.eng_de_software.dev_compass_api.security.repository.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final BaseUserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserDetailsServiceImpl(
-        BaseUserRepository userRepository
+        UserRepository userRepository
     ) {
         this.userRepository = userRepository;
     }
