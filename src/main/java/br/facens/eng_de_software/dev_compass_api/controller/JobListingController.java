@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.controller;
 
-import br.facens.eng_de_software.dev_compass_api.dto.JobListingEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.JobListingResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.JobListingEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.JobListingResponseDto;
 import br.facens.eng_de_software.dev_compass_api.service.JobListingService;
 
 import org.springframework.http.ResponseEntity;

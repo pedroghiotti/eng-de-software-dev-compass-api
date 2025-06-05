@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.service;
 
-import br.facens.eng_de_software.dev_compass_api.dto.CategoryEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.CategoryResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.CategoryEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.CategoryResponseDto;
 import br.facens.eng_de_software.dev_compass_api.model.Category;
 import br.facens.eng_de_software.dev_compass_api.repository.CategoryRepository;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +21,7 @@ public class CategoryService {
     public CategoryResponseDto create(UUID id, CategoryEditorDto editorDto) {
         Category newCategory = new Category(id, editorDto.name());
         technologyRepository.save(newCategory);
-        return CategoryResponseDto.fromCatgory(newCategory);
+        return CategoryResponseDto.fromCategory(newCategory);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -31,7 +31,7 @@ public class CategoryService {
     }
 
     public CategoryResponseDto getById(UUID id) {
-        return CategoryResponseDto.fromCatgory(
+        return CategoryResponseDto.fromCategory(
                 technologyRepository.findById(id)
                         .orElseThrow(RuntimeException::new)
         );
@@ -39,7 +39,7 @@ public class CategoryService {
 
     public List<CategoryResponseDto> getAll() {
         return technologyRepository.findAll().stream()
-                .map(CategoryResponseDto::fromCatgory).toList();
+                .map(CategoryResponseDto::fromCategory).toList();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -51,7 +51,7 @@ public class CategoryService {
 
         technologyRepository.save(category);
 
-        return CategoryResponseDto.fromCatgory(category);
+        return CategoryResponseDto.fromCategory(category);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

@@ -1,4 +1,14 @@
 package br.facens.eng_de_software.dev_compass_api.security.dto;
 
-public record BaseUserEditorDto(String username, String password) {
+import lombok.Getter;
+
+@Getter
+public class BaseUserEditorDto {
+    private final String username;
+    private final String password;
+
+    public BaseUserEditorDto(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

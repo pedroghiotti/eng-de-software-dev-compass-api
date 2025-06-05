@@ -1,9 +1,11 @@
 package br.facens.eng_de_software.dev_compass_api.service;
 
-import br.facens.eng_de_software.dev_compass_api.dto.JobListingEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.JobListingResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.JobListingEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.JobListingResponseDto;
+import br.facens.eng_de_software.dev_compass_api.model.Benefit;
 import br.facens.eng_de_software.dev_compass_api.model.Business;
 import br.facens.eng_de_software.dev_compass_api.model.Category;
+import br.facens.eng_de_software.dev_compass_api.model.CompensationPackage;
 import br.facens.eng_de_software.dev_compass_api.model.JobListing;
 import br.facens.eng_de_software.dev_compass_api.model.Region;
 import br.facens.eng_de_software.dev_compass_api.model.Technology;
@@ -74,6 +76,11 @@ public class JobListingService {
 
         Business owner = (Business) authenticationService.getCurrentUser();
 
+        CompensationPackage compensationPackage = new CompensationPackage(
+            editorDto.compensationPackageEditorDto().salary(),
+            editorDto.compensationPackageEditorDto().benefits().toArray(Benefit[]::new)
+        );
+
         JobListing newJobListing = new JobListing(
             id,
             editorDto.title(),
@@ -82,7 +89,7 @@ public class JobListingService {
             owner,
             technologies,
             categories,
-            3000D
+            compensationPackage
         );
         jobListingRepository.save(newJobListing);
         return JobListingResponseDto.fromJobListing(newJobListing);

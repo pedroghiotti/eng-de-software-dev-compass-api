@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.controller;
 
-import br.facens.eng_de_software.dev_compass_api.dto.RegionEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.RegionResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.RegionEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.RegionResponseDto;
 import br.facens.eng_de_software.dev_compass_api.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

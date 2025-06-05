@@ -1,5 +1,0 @@
-package br.facens.eng_de_software.dev_compass_api.model;
-
-public enum NotificationChannel {
-    EMAIL;
-}

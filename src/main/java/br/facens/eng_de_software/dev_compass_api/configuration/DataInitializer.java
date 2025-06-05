@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 
 import br.facens.eng_de_software.dev_compass_api.model.Business;
 import br.facens.eng_de_software.dev_compass_api.model.Category;
+import br.facens.eng_de_software.dev_compass_api.model.CompensationPackage;
 import br.facens.eng_de_software.dev_compass_api.model.JobListing;
 import br.facens.eng_de_software.dev_compass_api.model.Region;
+import br.facens.eng_de_software.dev_compass_api.model.Salary;
 import br.facens.eng_de_software.dev_compass_api.model.Technology;
 import br.facens.eng_de_software.dev_compass_api.repository.CategoryRepository;
 import br.facens.eng_de_software.dev_compass_api.repository.JobListingRepository;
@@ -66,6 +68,10 @@ public class DataInitializer {
                     newJobListingCategories.add(categories.get(random.nextInt(0, categories.size())));
                 }
 
+                CompensationPackage newJobListingCompensationPackage = new CompensationPackage(
+                    new Salary(random.nextDouble(1500, 15000))
+                );
+
                 JobListing newJobListing = new JobListing(
                     UUID.randomUUID(),
                     String.join(" | ", newJobListingTechnologies.stream().map(Technology::getName).toList()),
@@ -74,7 +80,7 @@ public class DataInitializer {
                     business,
                     newJobListingTechnologies,
                     newJobListingCategories,
-                    random.nextDouble(1500, 15000)
+                    newJobListingCompensationPackage
                 );
 
                 newJobListings.add(newJobListing);

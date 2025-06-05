@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<BaseUserResponseDto> create(@RequestBody BaseUserCreateDto editorDto) throws Exception {
         BaseUserResponseDto responseDto = baseUserService.create(editorDto);
-        return ResponseEntity.created(URI.create("/users/" + responseDto.id())).body(responseDto);
+        return ResponseEntity.created(URI.create("/users/" + responseDto.getId())).body(responseDto);
     }
 
     @GetMapping("/{id}")

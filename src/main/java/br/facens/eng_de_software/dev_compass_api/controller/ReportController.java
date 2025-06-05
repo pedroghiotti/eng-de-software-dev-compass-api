@@ -1,6 +1,6 @@
 package br.facens.eng_de_software.dev_compass_api.controller;
 
-import br.facens.eng_de_software.dev_compass_api.dto.ReportResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.ReportResponseDto;
 import br.facens.eng_de_software.dev_compass_api.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

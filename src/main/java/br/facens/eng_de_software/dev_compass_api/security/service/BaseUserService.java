@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.facens.eng_de_software.dev_compass_api.model.Business;
-import br.facens.eng_de_software.dev_compass_api.model.Candidate;
 import br.facens.eng_de_software.dev_compass_api.security.dto.BaseUserCreateDto;
 import br.facens.eng_de_software.dev_compass_api.security.dto.BaseUserEditorDto;
 import br.facens.eng_de_software.dev_compass_api.security.dto.BaseUserResponseDto;
@@ -34,49 +33,47 @@ public class BaseUserService {
     }
 
     public BaseUserResponseDto create(BaseUserCreateDto createDto) throws Exception {
-        String encodedPassword = passwordEncoder.encode(createDto.password());
+        String encodedPassword = passwordEncoder.encode(createDto.getPassword());
         BaseUser newUser;
 
-        switch (createDto.role()) {
-            case BUSINESS -> newUser = new Business(createDto.username(), encodedPassword);
-            case CANDIDATE -> newUser = new Candidate(createDto.username(), encodedPassword);
+        switch (createDto.getRole()) {
+            case BUSINESS -> newUser = new Business(createDto.getUsername(), encodedPassword);
             case ADMIN -> {
                 BaseUser currentUser = authenticationService.getCurrentUser();
                 if (!currentUser.getRole().equals(Role.ADMIN))
                     throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");
-                newUser = new Admin(createDto.username(), encodedPassword);
+                newUser = new Admin(createDto.getUsername(), encodedPassword);
             }
             default -> throw new IllegalArgumentException("Invalid User type.");
         }
 
         userRepository.save(newUser);
-        return BaseUserResponseDto.fromBaseUser(newUser);
+        return BaseUserResponseDto.fromUser(newUser);
     }
 
     public BaseUserResponseDto getById(UUID id) throws Exception {
-        return BaseUserResponseDto.fromBaseUser(_getById(id));
+        return BaseUserResponseDto.fromUser(_getById(id));
     }
 
     public List<BaseUserResponseDto> getAll() {
         return userRepository.findAll().stream()
-                .map(BaseUserResponseDto::fromBaseUser).toList();
+                .map(BaseUserResponseDto::fromUser).toList();
     }
 
     public BaseUserResponseDto update(UUID id, BaseUserEditorDto editorDto) throws Exception {
-        BaseUser currentUser = _getById(id);
-        verifyOwnership(currentUser);
-
         BaseUser user = _getById(id);
-        user.setUsername(editorDto.username());
-        user.setPassword(passwordEncoder.encode(editorDto.password()));
+        verifyOwnership(user);
+
+        user.setUsername(editorDto.getUsername());
+        user.setPassword(passwordEncoder.encode(editorDto.getPassword()));
 
         userRepository.save(user);
-        return BaseUserResponseDto.fromBaseUser(user);
+        return BaseUserResponseDto.fromUser(user);
     }
 
     public void deleteById(UUID id) throws Exception {
-        BaseUser currentUser = _getById(id);
-        verifyOwnership(currentUser);
+        BaseUser user = _getById(id);
+        verifyOwnership(user);
 
         userRepository.deleteById(id);
     }
@@ -91,7 +88,7 @@ public class BaseUserService {
                         String.format("User listing not found with id %s", id)));
     }
 
-    private void verifyOwnership(BaseUser user) throws Exception {
+    public void verifyOwnership(BaseUser user) throws Exception {
         BaseUser currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(user.getId()))
             throw new AuthorizationDeniedException("User not authorized. Operation disallowed.");

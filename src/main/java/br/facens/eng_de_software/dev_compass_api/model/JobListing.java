@@ -33,7 +33,7 @@ public class JobListing {
 
     @OneToOne(optional=false, cascade=CascadeType.ALL) private CompensationPackage compensationPackage;
     
-    public JobListing(UUID id, String title, String description, Region region, Business owner, Set<Technology> technologies, Set<Category> categories, Double salaryValue, Double... benefitValues) {
+    public JobListing(UUID id, String title, String description, Region region, Business owner, Set<Technology> technologies, Set<Category> categories, CompensationPackage compensationPackage) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -41,9 +41,8 @@ public class JobListing {
         this.owner = owner;
         this.technologies = technologies;
         this.categories = categories;
-        this.compensationPackage = new CompensationPackage(salaryValue, benefitValues);
+        this.compensationPackage = compensationPackage;
     }
-
 
     public void unpublish() {
         if (this.state.equals(JobListingState.PUBLISHED))

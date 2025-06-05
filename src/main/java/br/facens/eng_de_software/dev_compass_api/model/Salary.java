@@ -1,12 +1,14 @@
 package br.facens.eng_de_software.dev_compass_api.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(force=true)
 public class Salary {
-    private Double amount;
+    private final Double amount;
 
     public Salary(Double amount) {
         this.amount = amount;

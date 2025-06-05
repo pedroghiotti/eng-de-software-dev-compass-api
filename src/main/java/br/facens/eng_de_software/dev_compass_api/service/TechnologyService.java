@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.service;
 
-import br.facens.eng_de_software.dev_compass_api.dto.TechnologyEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.TechnologyResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.TechnologyEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.TechnologyResponseDto;
 import br.facens.eng_de_software.dev_compass_api.model.Technology;
 import br.facens.eng_de_software.dev_compass_api.repository.TechnologyRepository;
 import org.springframework.beans.BeanUtils;

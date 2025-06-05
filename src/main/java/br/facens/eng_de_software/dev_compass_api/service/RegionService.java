@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.service;
 
-import br.facens.eng_de_software.dev_compass_api.dto.RegionEditorDto;
-import br.facens.eng_de_software.dev_compass_api.dto.RegionResponseDto;
+import br.facens.eng_de_software.dev_compass_api.dto.request.RegionEditorDto;
+import br.facens.eng_de_software.dev_compass_api.dto.response.RegionResponseDto;
 import br.facens.eng_de_software.dev_compass_api.model.Region;
 import br.facens.eng_de_software.dev_compass_api.repository.RegionRepository;
 import org.springframework.beans.BeanUtils;
