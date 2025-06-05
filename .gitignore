@@ -6,6 +6,7 @@ target/
 
 src/main/resources/app.key
 src/test/resources/app.key
+deploy.zip
 
 ### STS ###
 .apt_generated
