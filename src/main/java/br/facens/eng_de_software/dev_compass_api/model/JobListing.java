@@ -45,7 +45,7 @@ public class JobListing {
     }
 
     public void unpublish() {
-        if (this.state.equals(JobListingState.PUBLISHED))
+        if (!this.state.equals(JobListingState.PUBLISHED))
             throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.UNPUBLISHED);
         this.state = JobListingState.UNPUBLISHED;
     }
@@ -66,5 +66,20 @@ public class JobListing {
         if (!this.state.equals(JobListingState.SELECTION_IN_PROCESS))
             throw new IllegalStateException("Transição de estado inválida: " + this.state + " -> " + JobListingState.CLOSED);
         this.state = JobListingState.CLOSED;
+    }
+
+    @Override
+    public String toString() {
+        return "JobListing{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", state=" + state +
+                ", region=" + region +
+                ", owner=" + owner +
+                ", technologies=" + technologies +
+                ", categories=" + categories +
+                ", compensationPackage=" + compensationPackage +
+                '}';
     }
 }
