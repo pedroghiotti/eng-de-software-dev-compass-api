@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface JobListingRepository extends JpaRepository<JobListing, UUID> {
-    public List<JobListing> findAllByRegionName(String regionName);
+    public List<JobListing> findAllByRegionId(UUID regionId);
 }

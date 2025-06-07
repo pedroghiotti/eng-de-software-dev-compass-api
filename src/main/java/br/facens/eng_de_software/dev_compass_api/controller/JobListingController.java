@@ -33,8 +33,8 @@ public class JobListingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobListingResponseDto>> getAll(@RequestParam(required = false) String region) {
-        List<JobListingResponseDto> responseDtos = jobListingService.getAll(region);
+    public ResponseEntity<List<JobListingResponseDto>> getAll(@RequestParam(required = false) UUID regionId) {
+        List<JobListingResponseDto> responseDtos = jobListingService.getAllByRegionId(regionId);
         return ResponseEntity.ok(responseDtos);
     }
 

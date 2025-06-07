@@ -105,10 +105,10 @@ public class JobListingService {
         return JobListingResponseDto.fromJobListing(_getById(id));
     }
 
-    public List<JobListingResponseDto> getAll(String regionName) {
+    public List<JobListingResponseDto> getAllByRegionId(UUID regionId) {
         List<JobListing> jobListings;
-        if (!(regionName == null) && !(regionName.isBlank()))
-            jobListings = jobListingRepository.findAllByRegionName(regionName);
+        if (regionId != null)
+            jobListings = jobListingRepository.findAllByRegionId(regionId);
         else
             jobListings = jobListingRepository.findAll();
         return jobListings.stream().map(JobListingResponseDto::fromJobListing).toList();
