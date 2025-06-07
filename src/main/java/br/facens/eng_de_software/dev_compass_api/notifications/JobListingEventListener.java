@@ -25,7 +25,8 @@ public class JobListingEventListener {
     public void onJobListingPublished(JobListingPublishedEvent event) {
         JobListing publishedJobListing = event.getJobListing();
         
-        Set<Candidate> interestedCandidates = candidateRepository.findByPreferredCategoriesOrTechnologies(
+        Set<Candidate> interestedCandidates = candidateRepository.findByRegionAndPreferredCategoriesOrTechnologies(
+            publishedJobListing.getRegion(),
             publishedJobListing.getCategories(),
             publishedJobListing.getTechnologies()
         );
