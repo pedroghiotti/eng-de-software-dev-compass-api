@@ -1,7 +1,7 @@
 package br.facens.eng_de_software.dev_compass_api.notifications.model;
 
 public enum NotificationChannel {
-    EMAIL(new EmailNotificationGateway());
+    DEBUG(new DebugNotificationGateway());
 
     private final NotificationGateway notificationGateway;
 

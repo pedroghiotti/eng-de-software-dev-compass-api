@@ -60,7 +60,7 @@ class DevCompassApiApplicationTests {
 		Candidate matchingCandidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(),
 			Set.of(category),
 			region
@@ -97,7 +97,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(),
 			region
@@ -141,7 +141,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(category),
 			region
@@ -184,7 +184,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(),
 			Set.of(category),
 			candidateRegion
@@ -267,7 +267,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(category),
 			candidateRegion
@@ -310,7 +310,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(category),
 			region
@@ -353,7 +353,7 @@ class DevCompassApiApplicationTests {
 		Candidate candidate = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(),
 			Set.of(),
 			region
@@ -396,7 +396,7 @@ class DevCompassApiApplicationTests {
 		Candidate matchingByCategory = new Candidate(
 			"Candidate1",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(),
 			Set.of(category),
 			region
@@ -406,7 +406,7 @@ class DevCompassApiApplicationTests {
 		Candidate matchingByTechnology = new Candidate(
 			"Candidate2",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(),
 			region
@@ -416,7 +416,7 @@ class DevCompassApiApplicationTests {
 		Candidate nonMatchingRegion = new Candidate(
 			"Candidate",
 			"candidate@123",
-			Set.of(NotificationChannel.EMAIL),
+			Set.of(NotificationChannel.DEBUG),
 			Set.of(tech),
 			Set.of(category),
 			regionRepository.save(new Region(UUID.randomUUID(), "Mars"))
